@@ -43,9 +43,11 @@ function buildNewCartItem(cartItem) {
 function App() {
   const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasError, setHasError] = useState(false);
-  const [loadingError, setLoadingError] = useState(null);
+  const [loadHandling, setLoadHandling] = useState({
+    isLoading: false,
+    hasError: false,
+    loadingError: null,
+  });
 
   /*
   Using useEffect instead of componentDidMount
@@ -54,18 +56,27 @@ function App() {
     const prevItems = loadLocalStorageData();
 
     if (!prevItems) {
-      setIsLoading(true);
+      setLoadHandling((prevData) => ({
+        ...prevData,
+        isLoading: true,
+      }));
+      // setIsLoading(true);
       api
         .getProducts()
         .then((data) => {
           setProducts(data);
-          setHasError(false);
-          setIsLoading(false);
+          setLoadHandling((prevData) => ({
+            ...prevData,
+            hasError: false,
+            loadingError: false,
+          }));
         })
         .catch((error) => {
-          setHasError(true);
-          setIsLoading(false);
-          setLoadingError(error.message);
+          setLoadHandling({
+            isLoading: false,
+            hasError: true,
+            loadingError: error.message,
+          });
         });
       return;
     }
@@ -212,9 +223,9 @@ function App() {
             fullWidth
             cartItems={cartItems}
             products={products}
-            isLoading={isLoading}
-            hasError={hasError}
-            loadingError={loadingError}
+            isLoading={loadHandling.isLoading}
+            hasError={loadHandling.hasError}
+            loadingError={loadHandling.loadingError}
             handleDownVote={handleDownVote}
             handleUpVote={handleUpVote}
             handleSetFavorite={handleSetFavorite}

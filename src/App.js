@@ -60,7 +60,6 @@ function App() {
         ...prevData,
         isLoading: true,
       }));
-      // setIsLoading(true);
       api
         .getProducts()
         .then((data) => {
